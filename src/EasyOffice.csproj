@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3190094D-B0A6-442A-9A88-DEC1FA0A4CB9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EasyOffice</RootNamespace>
+    <AssemblyName>EasyOffice</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CsvHelper, Version=12.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.12.1.2\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.10.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.10.1\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=1.0.0.999, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.1.0.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net45\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net45\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net45\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.4.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.4.1\lib\net45\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\BaseDecorateAttribute.cs" />
+    <Compile Include="Attributes\BaseFilterAttribute.cs" />
+    <Compile Include="Attributes\BindDecoratorAttribute.cs" />
+    <Compile Include="Attributes\ColNameAttribute.cs" />
+    <Compile Include="Attributes\DateTimeAttribute.cs" />
+    <Compile Include="Attributes\DuplicationAttribute.cs" />
+    <Compile Include="Attributes\FilterBindAttribute.cs" />
+    <Compile Include="Attributes\HeaderAttribute.cs" />
+    <Compile Include="Attributes\IgnoreAttribute.cs" />
+    <Compile Include="Attributes\MaxLengthAttribute.cs" />
+    <Compile Include="Attributes\MergeColsAttribute.cs" />
+    <Compile Include="Attributes\PlaceholderAttribute.cs" />
+    <Compile Include="Attributes\PropertyDecoratorInfo.cs" />
+    <Compile Include="Attributes\RangeAttribute.cs" />
+    <Compile Include="Attributes\RegexAttribute.cs" />
+    <Compile Include="Attributes\RequiredAttribute.cs" />
+    <Compile Include="Attributes\WrapTextAttribute.cs" />
+    <Compile Include="Constants\ExportConstant.cs" />
+    <Compile Include="Constants\RegexConstant.cs" />
+    <Compile Include="Decorators\DecoratorComparer.cs" />
+    <Compile Include="Decorators\DecoratorContext.cs" />
+    <Compile Include="Decorators\HeaderDecorator.cs" />
+    <Compile Include="Decorators\MergeColsDecorator.cs" />
+    <Compile Include="Decorators\TypeDecoratorInfo.cs" />
+    <Compile Include="Decorators\WrapTextDecorator.cs" />
+    <Compile Include="Enums\ColorEnum.cs" />
+    <Compile Include="Enums\ExcelTypeEnum.cs" />
+    <Compile Include="Enums\PictureTypeEnum.cs" />
+    <Compile Include="Enums\SolutionEnum.cs" />
+    <Compile Include="Enums\ValidateModeEnum.cs" />
+    <Compile Include="Enums\WordEnums.cs" />
+    <Compile Include="ExpressionVisitors\SimplePropertyVisitor.cs" />
+    <Compile Include="Factories\DecoratorFactory.cs" />
+    <Compile Include="Factories\ExportMappingDictFactory.cs" />
+    <Compile Include="Factories\FilterFactory.cs" />
+    <Compile Include="Factories\FiltersFactory.cs" />
+    <Compile Include="Factories\TypeDecoratorInfoFactory.cs" />
+    <Compile Include="Factories\TypeFilterInfoFactory.cs" />
+    <Compile Include="Factories\WordPictureFactory.cs" />
+    <Compile Include="Filters\AndFilter.cs" />
+    <Compile Include="Filters\BaseFilter.cs" />
+    <Compile Include="Filters\DateTimeFilter.cs" />
+    <Compile Include="Filters\DuplicateFilter.cs" />
+    <Compile Include="Filters\FilterComparer.cs" />
+    <Compile Include="Filters\FilterContext.cs" />
+    <Compile Include="Filters\MaxLengthFilter.cs" />
+    <Compile Include="Filters\PropertyFilterInfo.cs" />
+    <Compile Include="Filters\RangeFilter.cs" />
+    <Compile Include="Filters\RegexFilter.cs" />
+    <Compile Include="Filters\RequiredFilter.cs" />
+    <Compile Include="Filters\TypeFilterInfo.cs" />
+    <Compile Include="Interfaces\IDecorator.cs" />
+    <Compile Include="Interfaces\IExcelExportProvider.cs" />
+    <Compile Include="Interfaces\IExcelExportService.cs" />
+    <Compile Include="Interfaces\IExcelImportProvider.cs" />
+    <Compile Include="Interfaces\IExcelImportService.cs" />
+    <Compile Include="Interfaces\IFilter.cs" />
+    <Compile Include="Interfaces\IWordElement.cs" />
+    <Compile Include="Interfaces\IWordExportProvider.cs" />
+    <Compile Include="Interfaces\IWordExportService.cs" />
+    <Compile Include="Interfaces\IWordImportProvider.cs" />
+    <Compile Include="Models\Excel\ExcelCol.cs" />
+    <Compile Include="Models\Excel\ExcelData.cs" />
+    <Compile Include="Models\Excel\ExcelDataCol.cs" />
+    <Compile Include="Models\Excel\ExcelDataRow.cs" />
+    <Compile Include="Models\Excel\ExcelHeaderRow.cs" />
+    <Compile Include="Models\Excel\ExportOption.cs" />
+    <Compile Include="Models\Excel\ImportOption.cs" />
+    <Compile Include="Models\Excel\Rule.cs" />
+    <Compile Include="Models\Excel\Validator.cs" />
+    <Compile Include="Models\Word\Paragraph.cs" />
+    <Compile Include="Models\Word\Picture.cs" />
+    <Compile Include="Models\Word\PlaceholderPicture.cs" />
+    <Compile Include="Models\Word\Run.cs" />
+    <Compile Include="Models\Word\Table.cs" />
+    <Compile Include="Models\Word\TableCell.cs" />
+    <Compile Include="Models\Word\TableRow.cs" />
+    <Compile Include="Models\Word\Word.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\NPOI\CSVExcelExportProvider.cs" />
+    <Compile Include="Providers\NPOI\ExcelExportProvider.cs" />
+    <Compile Include="Providers\NPOI\ExcelImportProvider.cs" />
+    <Compile Include="Providers\NPOI\NPOIExcelExtensions.cs" />
+    <Compile Include="Providers\NPOI\NPOIHelper.cs" />
+    <Compile Include="Providers\NPOI\NPOIWordExtensions.cs" />
+    <Compile Include="Providers\NPOI\OpenXmlExcelExportProvider.cs" />
+    <Compile Include="Providers\NPOI\WordExportProvider.cs" />
+    <Compile Include="Providers\NPOI\WordImportProvider.cs" />
+    <Compile Include="ServiceFactory.cs" />
+    <Compile Include="Services\ExcelExportService.cs" />
+    <Compile Include="Services\ExcelImportService.cs" />
+    <Compile Include="Services\WordExportService.cs" />
+    <Compile Include="Utils\CommonHelper.cs" />
+    <Compile Include="Utils\ExcelExtensionMethods.cs" />
+    <Compile Include="Utils\ExpressionMapper.cs" />
+    <Compile Include="Utils\WordHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
