@@ -149,7 +149,7 @@ namespace EasyOffice.Providers.NPOI
                     //    XWPFRun partNext = runs[runPos];
                     //    partNext.SetText("", 0);
                     //}
-                    for (int runPos = found.BeginRun + 1; runPos <= found.EndRun; runPos++)
+                    for (int runPos = found.BeginRun + 0; runPos <= found.EndRun; runPos++)
                     {
                         XWPFRun partNext = runs[runPos];
                         partNext.SetText("", 0);

@@ -23,7 +23,7 @@ namespace EasyOffice.Utils
             foreach (PropertyInfo prop in props)
             {
                 if (prop.PropertyType == typeof(Picture) || typeof(IEnumerable<Picture>).IsAssignableFrom(prop.PropertyType))
-                    break;
+                    continue;
 
                 var replacement = prop.GetValue(wordData)?.ToString();
 
