@@ -36,11 +36,49 @@ namespace EasyOffice.Providers.NPOI
         {
             if (run != null)
             {
-                xwpfRun.SetText(run.Text);
-                xwpfRun.FontSize = run.FontSize;//设置字体大小
-                xwpfRun.SetFontFamily(run.FontFamily, FontCharRange.Ascii);//设置粗体
-                xwpfRun.IsBold = run.IsBold;
-                xwpfRun.SetColor(run.Color);
+                if (run.HasLineBreak)
+                {
+                    xwpfRun.AddCarriageReturn();
+                }
+                else
+                {
+                    xwpfRun.SetText(run.Text);
+                    xwpfRun.FontSize = run.FontSize;//设置字体大小
+                    xwpfRun.SetFontFamily(run.FontFamily, FontCharRange.Ascii);//设置粗体
+                    xwpfRun.IsBold = run.IsBold;
+                    xwpfRun.SetColor(run.Color);
+                    xwpfRun.IsItalic = run.IsItalic;
+                    if (run.UnderlineType != UnderlineType.None)
+                    {
+                        switch (run.UnderlineType)
+                        {
+                            case UnderlineType.Underline:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Single);
+                                break;
+                            case UnderlineType.DoubleUnderline:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Double);
+                                break;
+                            case UnderlineType.ThickUnderline:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Thick);
+                                break;
+                            case UnderlineType.DottedDashed:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Dotted);
+                                break;
+                            case UnderlineType.Dashed:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Dash);
+                                break;
+                            case UnderlineType.WavyLine:
+                                xwpfRun.SetUnderline(UnderlinePatterns.Wave);
+                                break;
+                            case UnderlineType.None:
+                                xwpfRun.SetUnderline(UnderlinePatterns.None);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
             }
 
             if (run.Pictures != null)

@@ -22,7 +22,9 @@ namespace EasyOffice.Utils
 
             foreach (PropertyInfo prop in props)
             {
-                if (prop.PropertyType == typeof(Picture) || typeof(IEnumerable<Picture>).IsAssignableFrom(prop.PropertyType))
+                if (prop.PropertyType == typeof(Picture) 
+                    || typeof(IEnumerable<Picture>).IsAssignableFrom(prop.PropertyType)
+                    || prop.PropertyType == typeof(RunCollection))
                     continue;
 
                 var replacement = prop.GetValue(wordData)?.ToString();
@@ -35,7 +37,28 @@ namespace EasyOffice.Utils
 
             return replacements;
         }
+        public static Dictionary<string, RunCollection> GetRunsReplacements<T>(T wordData)
+        {
+            Dictionary<string, RunCollection> replacements = new Dictionary<string, RunCollection>();
+            Type type = typeof(T);
+            PropertyInfo[] props = type.GetProperties();
 
+            foreach (PropertyInfo prop in props)
+            {
+                if (prop.PropertyType == typeof(RunCollection))
+                {
+
+                    var replacement = prop.GetValue(wordData) as RunCollection;
+
+                    var placeholder = prop.IsDefined(typeof(PlaceholderAttribute)) ?
+                       prop.GetCustomAttribute<PlaceholderAttribute>().Placeholder.ToString() : "{" + prop.Name + "}";
+
+                    replacements.Add(placeholder, replacement);
+                }
+
+            }
+            return replacements;
+        }
         public static Dictionary<string, IEnumerable<Picture>> GetPictureReplacements<T>(T wordData)
           where T : class, new()
         {

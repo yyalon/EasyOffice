@@ -63,8 +63,9 @@ namespace EasyOffice.Providers.NPOI
             Dictionary<string, string> stringReplacements = WordHelper.GetReplacements(wordData);
 
             Dictionary<string, IEnumerable<Picture>> pictureReplacements = WordHelper.GetPictureReplacements(wordData);
-
-            NPOIHelper.ReplacePlaceholdersInWord(word, stringReplacements, pictureReplacements);
+            Dictionary<string, RunCollection> runReplacements = WordHelper.GetRunsReplacements(wordData);
+            //
+            NPOIHelper.ReplacePlaceholdersInWord(word, stringReplacements, pictureReplacements, runReplacements);
         }
 
         public Word CreateWord()

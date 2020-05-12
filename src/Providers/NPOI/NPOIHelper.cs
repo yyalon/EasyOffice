@@ -20,15 +20,17 @@ namespace EasyOffice.Providers.NPOI
         /// <param name="doc">word</param>
         /// <param name="placeHolderAndValueDict">占位符：值 字典</param>
         /// <param name="hook">钩子委托</param>
-        public static void ReplacePlaceholdersInWord(XWPFDocument doc, Dictionary<string, string> stringReplacements
-            ,Dictionary<string, IEnumerable<Picture>> pictureReplacements)
+        public static void ReplacePlaceholdersInWord(XWPFDocument doc
+            , Dictionary<string, string> stringReplacements
+            ,Dictionary<string, IEnumerable<Picture>> pictureReplacements
+            , Dictionary<string, RunCollection> runReplacements)
         {
             IEnumerator<XWPFParagraph> paragraphEnumerator = doc.GetParagraphsEnumerator();
             XWPFParagraph paragraph;
             while (paragraphEnumerator.MoveNext())
             {
                 paragraph = paragraphEnumerator.Current;
-                ReplaceInParagraph(stringReplacements, pictureReplacements, paragraph);
+                ReplaceInParagraph(stringReplacements, pictureReplacements, paragraph, runReplacements);
             }
 
             IEnumerator<XWPFTable> tableEnumerator = doc.GetTablesEnumerator();
@@ -36,12 +38,12 @@ namespace EasyOffice.Providers.NPOI
             while (tableEnumerator.MoveNext())
             {
                 table = tableEnumerator.Current;
-                ReplacePlaceholderInTable(table, stringReplacements, pictureReplacements);
+                ReplacePlaceholderInTable(table, stringReplacements, pictureReplacements, runReplacements);
             }
 
             var placeholders = stringReplacements.Select(x => x.Key).Union(pictureReplacements.Select(x => x.Key));
 
-            ClearPlaceholders(placeholders, doc);
+            ClearPlaceholders(placeholders, doc, runReplacements);
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace EasyOffice.Providers.NPOI
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="listAllPlaceHolder"></param>
-        private static void ClearPlaceholders(IEnumerable<string> placeholders, XWPFDocument doc)
+        private static void ClearPlaceholders(IEnumerable<string> placeholders, XWPFDocument doc, Dictionary<string, RunCollection> runReplacements)
         {
             Dictionary<string, string> replacements = new Dictionary<string, string>();
             foreach (var placeHolder in placeholders)
@@ -62,7 +64,7 @@ namespace EasyOffice.Providers.NPOI
             while (paragraphEnumerator.MoveNext())
             {
                 paragraph = paragraphEnumerator.Current;
-                ReplaceInParagraph(replacements,null, paragraph);
+                ReplaceInParagraph(replacements,null, paragraph, runReplacements);
             }
 
             IEnumerator<XWPFTable> tableEnumerator = doc.GetTablesEnumerator();
@@ -70,7 +72,7 @@ namespace EasyOffice.Providers.NPOI
             while (tableEnumerator.MoveNext())
             {
                 table = tableEnumerator.Current;
-                ReplacePlaceholderInTable(table, replacements, null);
+                ReplacePlaceholderInTable(table, replacements, null, runReplacements);
             }
         }
 
@@ -81,19 +83,24 @@ namespace EasyOffice.Providers.NPOI
         /// <param name="placeHolder"></param>
         /// <param name="replaceText"></param>
         /// <param name="setRunStyleDelegate"></param>
-        private static void ReplacePlaceholderInTable(XWPFTable table, Dictionary<string, string> stringReplacements,Dictionary<string,IEnumerable<Picture>> pictureReplacements)
+        private static void ReplacePlaceholderInTable(XWPFTable table
+            , Dictionary<string, string> stringReplacements
+            ,Dictionary<string,IEnumerable<Picture>> pictureReplacements
+             , Dictionary<string, RunCollection> runReplacements)
         {
             foreach (XWPFTableRow row in table.Rows)
             {
                 foreach (XWPFTableCell cell in row.GetTableCells())
                 {
-                    ReplaceInParagraphs(stringReplacements, pictureReplacements, cell.Paragraphs);
+                    ReplaceInParagraphs(stringReplacements, pictureReplacements, cell.Paragraphs, runReplacements);
                 }
             }
         }
 
         private static void ReplaceInParagraph(Dictionary<string, string> stringReplacements, 
-            Dictionary<string,IEnumerable<Picture>> pictureReplacements,XWPFParagraph paragraph)
+            Dictionary<string,IEnumerable<Picture>> pictureReplacements
+            ,XWPFParagraph paragraph
+            ,Dictionary<string, RunCollection> runReplacements)
         {
             //替换文本
             if (stringReplacements != null)
@@ -108,7 +115,7 @@ namespace EasyOffice.Providers.NPOI
                     }
                 }
             }
-
+            //替换图片
             if (pictureReplacements != null)
             {
                 foreach (var item in pictureReplacements)
@@ -121,15 +128,36 @@ namespace EasyOffice.Providers.NPOI
                     }
                 }
             }
-            
+            //替换run
+            if (runReplacements != null)
+            {
+                foreach (var item in runReplacements)
+                {
+                    int pos = -1;
+                    var matchRun = FindPlaceholderRun(item.Key, paragraph,out pos);
+                    if (matchRun != null)
+                    {
+                        foreach (var run in item.Value)
+                        {
+                            var newRun = paragraph.InsertNewRun(pos);
+                            newRun.Set(run);
+                            pos++;
+                        }
+                    }
+                }
+            }
         }
-
         private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph)
+        {
+            int pos = -1;
+            return FindPlaceholderRun(placeholder,paragraph,out pos);
+        }
+        private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph,out int pos)
         {
             XWPFRun matchRun = null;
 
             var runs = paragraph.Runs;
-
+            pos = -1;
             TextSegment found = paragraph.SearchText(placeholder, new PositionInParagraph());
             if (found != null)
             {
@@ -155,17 +183,20 @@ namespace EasyOffice.Providers.NPOI
                         partNext.SetText("", 0);
                     }
                 }
+                pos = found.BeginRun;
             }
 
             return matchRun;
         }
 
-        private static void ReplaceInParagraphs(Dictionary<string, string> stringReplacements,Dictionary<string,IEnumerable<Picture>> pictureReplacement, 
-            IEnumerable<XWPFParagraph> xwpfParagraphs)
+        private static void ReplaceInParagraphs(Dictionary<string, string> stringReplacements
+            ,Dictionary<string,IEnumerable<Picture>> pictureReplacement
+            ,IEnumerable<XWPFParagraph> xwpfParagraphs
+            , Dictionary<string, RunCollection> runReplacements)
         {
             foreach (XWPFParagraph paragraph in xwpfParagraphs)
             {
-                ReplaceInParagraph(stringReplacements, pictureReplacement, paragraph);
+                ReplaceInParagraph(stringReplacements, pictureReplacement, paragraph, runReplacements);
             }
         }
 
