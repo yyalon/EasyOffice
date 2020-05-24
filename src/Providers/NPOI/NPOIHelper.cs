@@ -25,8 +25,10 @@ namespace EasyOffice.Providers.NPOI
             ,Dictionary<string, IEnumerable<Picture>> pictureReplacements
             , Dictionary<string, RunCollection> runReplacements)
         {
+
             IEnumerator<XWPFParagraph> paragraphEnumerator = doc.GetParagraphsEnumerator();
             XWPFParagraph paragraph;
+      
             while (paragraphEnumerator.MoveNext())
             {
                 paragraph = paragraphEnumerator.Current;
@@ -97,21 +99,71 @@ namespace EasyOffice.Providers.NPOI
             }
         }
 
-        private static void ReplaceInParagraph(Dictionary<string, string> stringReplacements, 
-            Dictionary<string,IEnumerable<Picture>> pictureReplacements
-            ,XWPFParagraph paragraph
-            ,Dictionary<string, RunCollection> runReplacements)
+        //private static void ReplaceInParagraph(Dictionary<string, string> stringReplacements, 
+        //    Dictionary<string,IEnumerable<Picture>> pictureReplacements
+        //    ,XWPFParagraph paragraph
+        //    ,Dictionary<string, RunCollection> runReplacements)
+        //{
+        //    //替换文本
+        //    if (stringReplacements != null)
+        //    {
+        //        foreach (var item in stringReplacements)
+        //        {
+        //            var matchRun = FindPlaceholderRun(item.Key, paragraph);
+
+        //            if (matchRun != null)
+        //            {
+        //                matchRun.SetText(item.Value);
+        //            }
+        //        }
+        //    }
+        //    //替换图片
+        //    if (pictureReplacements != null)
+        //    {
+        //        foreach (var item in pictureReplacements)
+        //        {
+        //            var matchRun = FindPlaceholderRun(item.Key, paragraph);
+
+        //            if (matchRun != null)
+        //            {
+        //                matchRun.Set(item.Value);
+        //            }
+        //        }
+        //    }
+        //    //替换run
+        //    if (runReplacements != null)
+        //    {
+        //        foreach (var item in runReplacements)
+        //        {
+        //            int pos = -1;
+        //            var matchRun = FindPlaceholderRun(item.Key, paragraph,out pos);
+        //            if (matchRun != null)
+        //            {
+        //                foreach (var run in item.Value)
+        //                {
+        //                    var newRun = paragraph.InsertNewRun(pos);
+        //                    newRun.Set(run);
+        //                    pos++;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+        private static void ReplaceInParagraph(Dictionary<string, string> stringReplacements,
+            Dictionary<string, IEnumerable<Picture>> pictureReplacements
+            , XWPFParagraph paragraph
+            , Dictionary<string, RunCollection> runReplacements)
         {
             //替换文本
             if (stringReplacements != null)
             {
                 foreach (var item in stringReplacements)
                 {
-                    var matchRun = FindPlaceholderRun(item.Key, paragraph);
-
-                    if (matchRun != null)
+                    var matchRuns = FindPlaceholderRun(item.Key, paragraph);
+                    foreach (var matchRun in matchRuns)
                     {
-                        matchRun.SetText(item.Value);
+                        var text = matchRun.Run.Text.Replace(item.Key, item.Value);
+                        matchRun.Run.SetText(text);
                     }
                 }
             }
@@ -120,11 +172,14 @@ namespace EasyOffice.Providers.NPOI
             {
                 foreach (var item in pictureReplacements)
                 {
-                    var matchRun = FindPlaceholderRun(item.Key, paragraph);
-                    
-                    if (matchRun != null)
+                    var matchRuns = FindPlaceholderRun(item.Key, paragraph);
+                    foreach (var matchRun in matchRuns)
                     {
-                        matchRun.Set(item.Value);
+                        int pos = matchRun.Position;
+                        var newImgRun = paragraph.InsertNewRun(pos);
+                        newImgRun.Set(item.Value);
+                       
+                        //matchRun.Set(item.Value);
                     }
                 }
             }
@@ -133,10 +188,12 @@ namespace EasyOffice.Providers.NPOI
             {
                 foreach (var item in runReplacements)
                 {
-                    int pos = -1;
-                    var matchRun = FindPlaceholderRun(item.Key, paragraph,out pos);
-                    if (matchRun != null)
+                    //int pos = -1;
+                    var matchRuns = FindPlaceholderRun(item.Key, paragraph);
+                    foreach (var matchRun in matchRuns)
                     {
+                        int pos = matchRun.Position;
+                        matchRun.Run.SetText(String.Empty);
                         foreach (var run in item.Value)
                         {
                             var newRun = paragraph.InsertNewRun(pos);
@@ -147,46 +204,79 @@ namespace EasyOffice.Providers.NPOI
                 }
             }
         }
-        private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph)
+        //private static List<XWPFRunWrap> FindPlaceholderRun(string placeholder, XWPFParagraph paragraph)
+        //{
+        //    int pos = -1;
+        //    return FindPlaceholderRun(placeholder, paragraph, out pos);
+        //}
+        //private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph)
+        //{
+        //    int pos = -1;
+        //    return FindPlaceholderRun(placeholder,paragraph,out pos);
+        //}
+        //private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph, out int pos)
+        //{
+        //    XWPFRun matchRun = null;
+
+        //    var runs = paragraph.Runs;
+        //    pos = -1;
+        //    TextSegment found = paragraph.SearchText(placeholder, new PositionInParagraph());
+        //    if (found != null)
+        //    {
+        //        if (found.BeginRun == found.EndRun)
+        //        {
+        //            // 只有一个Run
+        //            matchRun = runs[found.BeginRun];
+        //        }
+        //        else
+        //        {
+        //            // 第一个Run设置文本为占位符
+        //            matchRun = runs[found.BeginRun];
+
+        //            // 清空其他Run的文本
+        //            //for (int runPos = found.BeginRun + 1; runPos <= found.EndRun; runPos++)
+        //            //{
+        //            //    XWPFRun partNext = runs[runPos];
+        //            //    partNext.SetText("", 0);
+        //            //}
+        //            for (int runPos = found.BeginRun + 0; runPos <= found.EndRun; runPos++)
+        //            {
+        //                XWPFRun partNext = runs[runPos];
+        //                partNext.SetText("", 0);
+        //            }
+        //        }
+        //        pos = found.BeginRun;
+        //    }
+
+        //    return matchRun;
+        //}
+        private static List<XWPFRunWrap> FindPlaceholderRun(string placeholder, XWPFParagraph paragraph)
         {
-            int pos = -1;
-            return FindPlaceholderRun(placeholder,paragraph,out pos);
-        }
-        private static XWPFRun FindPlaceholderRun(string placeholder, XWPFParagraph paragraph,out int pos)
-        {
-            XWPFRun matchRun = null;
+            List<XWPFRunWrap> matchRuns = new List<XWPFRunWrap>();
 
             var runs = paragraph.Runs;
-            pos = -1;
-            TextSegment found = paragraph.SearchText(placeholder, new PositionInParagraph());
-            if (found != null)
+            int i = 0;
+            foreach (var run in runs)
             {
-                if (found.BeginRun == found.EndRun)
+                if (run.Text.IndexOf(placeholder) != -1)
                 {
-                    // 只有一个Run
-                    matchRun = runs[found.BeginRun];
+                    matchRuns.Add(new XWPFRunWrap(run, i));
                 }
-                else
-                {
-                    // 第一个Run设置文本为占位符
-                    matchRun = runs[found.BeginRun];
-
-                    // 清空其他Run的文本
-                    //for (int runPos = found.BeginRun + 1; runPos <= found.EndRun; runPos++)
-                    //{
-                    //    XWPFRun partNext = runs[runPos];
-                    //    partNext.SetText("", 0);
-                    //}
-                    for (int runPos = found.BeginRun + 0; runPos <= found.EndRun; runPos++)
-                    {
-                        XWPFRun partNext = runs[runPos];
-                        partNext.SetText("", 0);
-                    }
-                }
-                pos = found.BeginRun;
+                i++;
             }
-
-            return matchRun;
+            //TextSegment found = paragraph.SearchText(placeholder, new PositionInParagraph());
+            //if (found != null)
+            //{
+            //    for (int i = found.BeginRun; i <= found.EndRun; i++)
+            //    {
+            //        var run = runs[i];
+            //        if (run.Text.IndexOf(placeholder) != -1)
+            //        {
+            //            matchRuns.Add(new XWPFRunWrap(run,i));
+            //        }
+            //    }
+            //}
+            return matchRuns;
         }
 
         private static void ReplaceInParagraphs(Dictionary<string, string> stringReplacements
